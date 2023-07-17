@@ -3,7 +3,6 @@ import subprocess
 import streamlit as st
 from io import BytesIO
 import pythoncom
-import tempfile
 
 
 def convert_to_pdf(file_path):
@@ -38,9 +37,8 @@ def main():
 
     if file is not None:
         file_name = file.name
-        actual_filename, file_type = file_name.split('.')
-        temp_dir = tempfile.TemporaryDirectory()
-        file_path = os.path.join(temp_dir.name, file_name)
+        file_path = os.path.join(os.getcwd(), file_name)
+        actual_name, file_type = file_name.split('.')
         with open(file_path, 'wb') as f:
             f.write(file.read())
         st.info(f'Converting file: {file_name}')
@@ -48,8 +46,10 @@ def main():
         if converted_file:
             with open(converted_file, 'rb') as f:
                 pdf_bytes = f.read()
-            #st.success(f'Converted file saved as: {converted_file}')
-            st.download_button('Download Converted PDF', pdf_bytes, file_name=f'{actual_filename}.pdf')
+            st.success(f'Converted file saved as: {converted_file}')
+            st.download_button('Download Converted PDF',
+                               pdf_bytes,
+                               file_name=f'{actual_name}.pdf')
 
 if __name__ == '__main__':
     main()
